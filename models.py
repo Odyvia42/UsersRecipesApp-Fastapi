@@ -10,15 +10,15 @@ class Author(Base):
     nickname = Column(String, nullable=False, unique=True)
     is_blocked = Column(Boolean)
     faves_id_list = Column(String)
-    date_created = datetime.date
-    date_updated = datetime.date
+    date_created = Column(String)
+    date_updated = Column(String)
 
 class Recipe(Base):
     __tablename__ = 'recipes'
     id = Column(Integer, primary_key=True, autoincrement=True)
     author_nickname = Column(String, nullable=False, unique=True)
-    date_created = datetime.date
-    date_updated = datetime.date
+    date_created = Column(String)
+    date_updated = Column(String)
     title = Column(String, nullable=False, unique=True)
     dish_type = Column(String, nullable=False)
     description = Column(Text)
