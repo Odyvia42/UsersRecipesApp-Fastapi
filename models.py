@@ -16,7 +16,7 @@ class Author(Base):
 class Recipe(Base):
     __tablename__ = 'recipes'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    author_nickname = Column(String, nullable=False, unique=True)
+    author_nickname = Column(String, nullable=False)
     date_created = Column(String)
     date_updated = Column(String)
     title = Column(String, nullable=False, unique=True)
