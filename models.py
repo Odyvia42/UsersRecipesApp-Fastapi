@@ -10,8 +10,8 @@ class Author(Base):
     nickname = Column(String, nullable=False, unique=True)
     is_blocked = Column(Boolean)
     faves_id_list = Column(String)
-    date_created = datetime.datetime
-    date_updated = datetime.datetime
+    date_created = datetime.date
+    date_updated = datetime.date
 
 class Recipe(Base):
     __tablename__ = 'recipes'

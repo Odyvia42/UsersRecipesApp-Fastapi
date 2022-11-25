@@ -10,14 +10,14 @@ class Author(BaseModel):
     nickname: str
     is_blocked: bool
     faves_id_list: list
-    date_created: datetime.datetime
-    date_updated: datetime.datetime
+    date_created: datetime.date
+    date_updated: datetime.date
 
 class Recipe(BaseModel):
     id: int
     author_nickname: str
-    date_created: datetime.datetime
-    date_updated: datetime.datetime
+    date_created: datetime.date
+    date_updated: datetime.date
     title: str
     dish_type: str
     description: text
