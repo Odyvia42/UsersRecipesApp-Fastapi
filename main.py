@@ -1,13 +1,20 @@
 import datetime
 from typing import List
-
-from fastapi import FastAPI, status, HTTPException
+from fastapi import FastAPI, status, HTTPException, Request
 from pydantic import BaseModel
 from starlette.responses import HTMLResponse
 from database import SessionLocal
 import models
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+
+
 
 app = FastAPI()
+templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
 
 
 class Author(BaseModel):
@@ -44,17 +51,11 @@ db = SessionLocal()
 
 
 @app.get("/", response_class=HTMLResponse)
-async def index():
-    return """
-    <html>
-        <head>
-            <title>Сервис пользовательских рецептов</title>
-        </head>
-        <body>
-            <h1>Look ma! HTML!</h1>
-        </body>
-    </html>
-    """
+async def index(request: Request):
+    return templates.TemplateResponse(
+        "index.html",
+        {"request": request},
+    )
 
 
 @app.get('/authors', response_model=List[Author], status_code=status.HTTP_200_OK)
