@@ -1,6 +1,6 @@
 import datetime
 from typing import List
-from fastapi import FastAPI, status, HTTPException, Request
+from fastapi import FastAPI, status, HTTPException, Request, Form
 from pydantic import BaseModel
 from starlette.responses import HTMLResponse
 from database import SessionLocal
@@ -20,10 +20,12 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 class Author(BaseModel):
     id: int
     nickname: str
+    password: str
     is_blocked: bool = False
     faves_id_list: str = ''
     date_created: str = datetime.datetime.utcnow()
     date_updated: str = datetime.datetime.utcnow()
+    is_logged_in: bool = False
 
     class Config:
         orm_mode = True
@@ -80,10 +82,12 @@ async def create_author(author: Author):
     new_author = models.Author(
         id=author.id,
         nickname=author.nickname,
+        password=author.password,
         is_blocked=author.is_blocked,
         faves_id_list=author.faves_id_list,
         date_created=author.date_created,
         date_updated=author.date_updated,
+        is_logged_in=author.is_logged_in,
     )
 
     db.add(new_author)

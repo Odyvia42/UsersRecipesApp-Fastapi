@@ -8,10 +8,12 @@ class Author(Base):
     __tablename__ = 'authors'
     id = Column(Integer, primary_key=True, autoincrement=True)
     nickname = Column(String, nullable=False, unique=True)
+    password = Column(String)
     is_blocked = Column(Boolean)
     faves_id_list = Column(String)
     date_created = Column(String)
     date_updated = Column(String)
+    is_logged_in = Column(Boolean)
 
 class Recipe(Base):
     __tablename__ = 'recipes'
