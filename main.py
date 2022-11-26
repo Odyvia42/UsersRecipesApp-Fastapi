@@ -1,6 +1,7 @@
 import datetime
 from typing import List
-from fastapi import FastAPI, status, HTTPException, Request, Form
+from fastapi import FastAPI, status, HTTPException, Request, Form, Depends
+from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 from starlette.responses import HTMLResponse
 from database import SessionLocal
