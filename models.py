@@ -1,10 +1,9 @@
-from datetime import datetime
 
 from pydantic import Field, EmailStr, BaseModel
 
 from database import Base
-from sqlalchemy import String, Integer, Boolean, Text, Column
-
+from sqlalchemy import String, Integer, Boolean, Text, Column, ForeignKey
+from sqlalchemy.orm import relationship
 
 class Author(Base):
     __tablename__ = 'authors'
@@ -16,11 +15,13 @@ class Author(Base):
     date_created = Column(String)
     date_updated = Column(String)
     is_logged_in = Column(Boolean)
+    recipes = relationship('Recipe', back_populates='author')
+
 
 class Recipe(Base):
     __tablename__ = 'recipes'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    author_nickname = Column(String, nullable=False)
+    author_nickname = Column(String, ForeignKey('authors.nickname'))
     date_created = Column(String)
     date_updated = Column(String)
     title = Column(String, nullable=False, unique=True)
@@ -31,6 +32,8 @@ class Recipe(Base):
     likes = Column(Integer)
     tags = Column(String)
     is_blocked = Column(Boolean)
+
+    author = relationship(Author, back_populates='recipes')
 
 
 
