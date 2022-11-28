@@ -40,20 +40,43 @@ class AuthorIn(BaseModel):
 class Recipe(BaseModel):
     id: int
     author_nickname: str
-    date_created: str = datetime.datetime.utcnow()
-    date_updated: str = datetime.datetime.utcnow()
     title: str
     dish_type: str
     description: str
     steps_to_complete: str
     pictures: str
-    likes: int
+    likes: int = 0
     tags: str
-    is_blocked: bool = False
+
 
     class Config:
         orm_mode = True
 
+class RecipeIn(BaseModel):
+    author_nickname: str
+    title: str
+    dish_type: str
+    description: str
+    steps_to_complete: str
+    pictures: str
+    likes: int = 0
+    tags: str
+    date_created = datetime.datetime.utcnow()
+    date_updated = datetime.datetime.utcnow()
+
+class RecipeUpdate(BaseModel):
+    title: str
+    dish_type: str
+    description: str
+    steps_to_complete: str
+    pictures: str
+    tags: str
+    date_updated = datetime.datetime.utcnow()
+
+
+class RecipeOut(Recipe):
+    date_created: str
+    date_updated: str
 
 db = SessionLocal()
 
@@ -91,10 +114,8 @@ async def create_author(author: AuthorIn):
         raise HTTPException(status_code=400, detail="This nickname already exists")
 
     new_author = models.Author(
-
         nickname=author.nickname,
         password=author.password,
-
     )
 
     db.add(new_author)
@@ -129,13 +150,13 @@ async def delete_author(author_id: int):
     return author_to_delete
 
 
-@app.get('/recipes', response_model=List[Recipe], status_code=status.HTTP_200_OK)
+@app.get('/recipes', response_model=List[RecipeOut], status_code=status.HTTP_200_OK)
 async def get_all_recipes():
     recipes = db.query(models.Recipe).all()
     return recipes
 
 
-@app.get('/recipes/{recipe_id}', response_model=Recipe, status_code=status.HTTP_200_OK)
+@app.get('/recipes/{recipe_id}', response_model=RecipeOut, status_code=status.HTTP_200_OK)
 async def get_recipe(recipe_id: int):
     recipe = db.query(models.Recipe).filter(models.Recipe.id == recipe_id).first()
     return recipe
@@ -143,13 +164,11 @@ async def get_recipe(recipe_id: int):
 
 @app.post('/recipes', response_model=Recipe,
           status_code=status.HTTP_201_CREATED)
-async def create_recipe(recipe: Recipe):
+async def create_recipe(recipe: RecipeIn):
     db_recipe = db.query(models.Recipe).filter(models.Recipe.title == recipe.title).first()
     if db_recipe is not None:
         raise HTTPException(status_code=400, detail="This recipe already exists")
-
     new_recipe = models.Recipe(
-        id=recipe.id,
         author_nickname=recipe.author_nickname,
         date_created=recipe.date_created,
         date_updated=recipe.date_updated,
@@ -158,10 +177,8 @@ async def create_recipe(recipe: Recipe):
         description=recipe.description,
         steps_to_complete=recipe.steps_to_complete,
         pictures=recipe.pictures,
-        likes=recipe.likes,
         tags=recipe.tags,
-        is_blocked=recipe.is_blocked,
-
+        likes=recipe.likes
     )
 
     db.add(new_recipe)
@@ -170,17 +187,15 @@ async def create_recipe(recipe: Recipe):
     return new_recipe
 
 
-@app.put('/recipes/{recipe_id}', response_model=Recipe, status_code=status.HTTP_200_OK)
-async def update_recipe(recipe_id: int, recipe: Recipe):
+@app.put('/recipes/{recipe_id}', response_model=RecipeOut, status_code=status.HTTP_200_OK)
+async def update_recipe(recipe_id: int, recipe: RecipeUpdate):
     recipe_to_update = db.query(models.Recipe).filter(models.Recipe.id == recipe_id).first()
-    recipe_to_update.author_nickname = recipe.author_nickname,
     recipe_to_update.date_updated = recipe.date_updated,
     recipe_to_update.title = recipe.title,
     recipe_to_update.dish_type = recipe.dish_type,
     recipe_to_update.description = recipe.description,
     recipe_to_update.steps_to_complete = recipe.steps_to_complete,
     recipe_to_update.pictures = recipe.pictures,
-    recipe_to_update.likes = recipe.likes,
     recipe_to_update.tags = recipe.tags,
 
     db.commit()
@@ -201,19 +216,6 @@ async def delete_recipe(recipe_id: int):
     return recipe_to_delete
 
 
-@app.post('/posts', dependencies=[Depends(jwtBearer())], tags=['posts'])
-def add_post(post: models.PostSchema):
-    post.id = len(posts) + 1
-    posts.append(post.dict())
-    return {
-        "info": "Post Added!"
-    }
-
-
-@app.post('/user/signup', tags=['user'])
-def user_signup(user: models.AdminSchema = Body(default=None)):
-    admins.append(user)
-    return signJWT(user.email), admins
 
 def check_user(data: models.AdminLoginSchema):
     for user in admins:
