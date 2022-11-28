@@ -15,14 +15,24 @@
 
 </nav>
 <body>
-    <h1>Список авторов</h1>
+    <h1>Список рецептов</h1>
     <ul>
-        {% for author in authors %}
+        {% for recipe in recipes %}
         <li>
-            <p> {{ author.nickname }} </p>
+            <h2> {{ recipe.title }} </h2>
+            <p> {{ recipe.author_nickname }} </p>
+            <p> {{ recipe.dish_type }} </p>
+            <p> {{ recipe.description }} </p>
+            <p> {{ recipe.steps_to_complete }} </p>
+            <p> {{ recipe.tags }} </p>
+            <p> Likes: {{ recipe.likes }} </p>
+            <p> {{ recipe.date_created }} </p>
+            <p> {{ recipe.date_updated }} </p>
+
         </li>
         {% endfor %}
     </ul>
 </body>
 </html>
+
 

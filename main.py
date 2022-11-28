@@ -162,6 +162,13 @@ async def get_all_recipes():
     return recipes
 
 
+@app.get('/recipes/list', response_class=HTMLResponse, status_code=status.HTTP_200_OK)
+async def get_all_recipes(request: Request):
+    recipes = db.query(models.Recipe).all()
+    context = {'request': request, 'recipes': recipes}
+    return templates.TemplateResponse('recipes_list.html', context)
+
+
 @app.get('/recipes/{recipe_id}', response_model=RecipeOut, status_code=status.HTTP_200_OK)
 async def get_recipe(recipe_id: int):
     recipe = db.query(models.Recipe).filter(models.Recipe.id == recipe_id).first()
