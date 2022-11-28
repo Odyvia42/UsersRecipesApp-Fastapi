@@ -207,11 +207,11 @@ def add_post(post: models.PostSchema):
 
 
 @app.post('/user/signup', tags=['user'])
-def user_signup(user: models.UserSchema = Body(default=None)):
+def user_signup(user: models.AdminSchema = Body(default=None)):
     admins.append(user)
     return signJWT(user.email), admins
 
-def check_user(data: models.UserLoginSchema):
+def check_user(data: models.AdminLoginSchema):
     for user in admins:
         if user.get("username") == data.username and user.get("password") == data.password:
             return True
@@ -219,7 +219,7 @@ def check_user(data: models.UserLoginSchema):
 
 
 @app.post('/user/login', tags=['user'])
-def user_login(user: models.UserLoginSchema = Body(default=None)):
+def user_login(user: models.AdminLoginSchema = Body(default=None)):
     print(admins)
     if check_user(user):
         return signJWT(user.username)
