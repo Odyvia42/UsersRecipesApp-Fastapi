@@ -9,11 +9,18 @@
 <nav>
     Навигация
     <ul>
-        <li><a href="/authors/list">Список авторов</a></li>
+        <li><a href="{{ 'authors' }}">Список авторов</a> </li>
     </ul>
 
 </nav>
 <body>
-    <h1>Item ID: {{ id }}</h1>
+    <h1>Список авторов</h1>
+    <ul>
+        {% for author in authors %}
+        <li>
+            <p> {{ author.nickname }} </p>
+        </li>
+        {% endfor %}
+    </ul>
 </body>
 </html>

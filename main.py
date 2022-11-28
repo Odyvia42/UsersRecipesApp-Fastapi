@@ -98,6 +98,12 @@ async def get_all_authors():
     authors = db.query(models.Author).all()
     return authors
 
+@app.get('/authors/list', response_class=HTMLResponse, status_code=status.HTTP_200_OK)
+async def get_all_authors(request: Request):
+    authors = db.query(models.Author).all()
+    context = {'request': request, 'authors': authors}
+    return templates.TemplateResponse('authors_list.html', context)
+
 
 @app.get('/authors/{author_id}', response_model=Author, status_code=status.HTTP_200_OK)
 async def get_author_by_id(author_id: int):
