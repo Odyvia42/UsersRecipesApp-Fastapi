@@ -20,15 +20,21 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 class Author(BaseModel):
     id: int
     nickname: str
-    password: str
-    is_blocked: bool = False
-    faves_id_list: str = ''
-    date_created: str = datetime.datetime.utcnow()
-    date_updated: str = datetime.datetime.utcnow()
-    is_logged_in: bool = False
+    faves_id_list: str | None = None
+
+
 
     class Config:
         orm_mode = True
+
+
+
+class AuthorIn(BaseModel):
+    nickname: str
+    password: str
+    date_created: str = datetime.datetime.utcnow()
+    faves_id_list: str | None = None
+
 
 
 class Recipe(BaseModel):
@@ -71,27 +77,24 @@ async def get_all_authors():
 
 
 @app.get('/authors/{author_id}', response_model=Author, status_code=status.HTTP_200_OK)
-async def get_author(author_id: int):
+async def get_author_by_id(author_id: int):
     author = db.query(models.Author).filter(models.Author.id == author_id).first()
     return author
 
 
+
 @app.post('/authors', response_model=Author,
           status_code=status.HTTP_201_CREATED)
-async def create_author(author: Author):
+async def create_author(author: AuthorIn):
     db_author = db.query(models.Author).filter(models.Author.nickname == author.nickname).first()
     if db_author is not None:
         raise HTTPException(status_code=400, detail="This nickname already exists")
 
     new_author = models.Author(
-        id=author.id,
+
         nickname=author.nickname,
         password=author.password,
-        is_blocked=author.is_blocked,
-        faves_id_list=author.faves_id_list,
-        date_created=author.date_created,
-        date_updated=author.date_updated,
-        is_logged_in=author.is_logged_in,
+
     )
 
     db.add(new_author)
@@ -101,11 +104,12 @@ async def create_author(author: Author):
 
 
 @app.put('/authors/{author_id}', response_model=Author, status_code=status.HTTP_200_OK)
-async def update_author(author_id: int, author: Author):
+async def update_author(author_id: int, author: AuthorIn):
     author_to_update = db.query(models.Author).filter(models.Author.id == author_id).first()
     author_to_update.nickname = author.nickname,
+    author_to_update.password = author.password
     author_to_update.faves_id_list = author.faves_id_list,
-    author_to_update.date_updated = author.date_updated,
+
 
     db.commit()
 
