@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from pydantic import Field, EmailStr, BaseModel
+
 from database import Base
 from sqlalchemy import String, Integer, Boolean, Text, Column
 
@@ -29,3 +31,42 @@ class Recipe(Base):
     likes = Column(Integer)
     tags = Column(String)
     is_blocked = Column(Boolean)
+
+
+
+
+class PostSchema(BaseModel):
+    id : int = Field(default=None)
+    title : str = Field(default=None)
+    content : str = Field(default=None)
+    class Config:
+        schema_extra = {
+            "post_demo" : {
+                "title" : "some title about animals",
+                "content" : "some content about animals"
+            }
+        }
+
+class UserSchema(BaseModel):
+    username : str = Field(default=None)
+    email : EmailStr = Field(default=None)
+    password : str = Field(default=None)
+    class Config:
+        the_schema = {
+            "user_demo": {
+                "name": "Bek",
+                "email": "help@bekbrace.com",
+                "password": "123"
+            }
+        }
+
+class UserLoginSchema(BaseModel):
+    username: str = Field(default=None)
+    password : str = Field(default=None)
+    class Config:
+        the_schema = {
+            "user_demo": {
+                "email": "help@bekbrace.com",
+                "password": "123"
+            }
+        }

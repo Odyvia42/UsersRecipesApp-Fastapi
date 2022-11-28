@@ -1,21 +1,20 @@
 import datetime
 from typing import List
-from fastapi import FastAPI, status, HTTPException, Request, Form, Depends
+from fastapi import FastAPI, status, HTTPException, Request, Form, Depends, Body
 from fastapi.security import OAuth2PasswordBearer
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from starlette.responses import HTMLResponse
+
+from app.auth.jwt_bearer import jwtBearer
+from app.auth.jwt_handler import signJWT
 from database import SessionLocal
 import models
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-
-
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-
 
 
 class Author(BaseModel):
@@ -52,6 +51,10 @@ class Recipe(BaseModel):
 
 db = SessionLocal()
 
+admins = [{
+      "username": "alexander_laggard",
+      "password": "cookedallthemdishes"
+    }]
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
@@ -109,7 +112,7 @@ async def update_author(author_id: int, author: Author):
     return author_to_update
 
 
-@app.delete('/authors/{author_id}')
+@app.delete('/authors/{author_id}', dependencies=[Depends(jwtBearer())])
 async def delete_author(author_id: int):
     author_to_delete = db.query(models.Author).filter(models.Author.id == author_id).first()
 
@@ -192,3 +195,35 @@ async def delete_recipe(recipe_id: int):
     db.commit()
 
     return recipe_to_delete
+
+
+@app.post('/posts', dependencies=[Depends(jwtBearer())], tags=['posts'])
+def add_post(post: models.PostSchema):
+    post.id = len(posts) + 1
+    posts.append(post.dict())
+    return {
+        "info": "Post Added!"
+    }
+
+
+@app.post('/user/signup', tags=['user'])
+def user_signup(user: models.UserSchema = Body(default=None)):
+    admins.append(user)
+    return signJWT(user.email), admins
+
+def check_user(data: models.UserLoginSchema):
+    for user in admins:
+        if user.get("username") == data.username and user.get("password") == data.password:
+            return True
+        return False
+
+
+@app.post('/user/login', tags=['user'])
+def user_login(user: models.UserLoginSchema = Body(default=None)):
+    print(admins)
+    if check_user(user):
+        return signJWT(user.username)
+    else:
+        return {
+            "error": "Invalid login details!"
+        }
