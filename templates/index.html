@@ -3,18 +3,19 @@
     <title>Кулинарный блог</title>
     <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
 </head>
+<body>
 <header>
     <h1>Добро пожаловать в сервис пользовательских рецептов</h1>
 </header>
 <nav>
     Навигация
     <ul>
+        <li><a href="/">На главную</a></li>
         <li><a href="/authors/list">Список авторов</a></li>
         <li><a href="/recipes/list">Список рецептов</a></li>
     </ul>
 
 </nav>
-<body>
-    <h1>Item ID: {{ id }}</h1>
+
 </body>
 </html>

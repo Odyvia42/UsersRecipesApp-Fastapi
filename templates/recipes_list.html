@@ -9,6 +9,7 @@
 <nav>
     Навигация
     <ul>
+        <li><a href="/">На главную</a></li>
         <li><a href="/authors/list">Список авторов</a></li>
         <li><a href="/recipes/list">Список рецептов</a></li>
     </ul>
@@ -20,14 +21,14 @@
         {% for recipe in recipes %}
         <li>
             <h2> {{ recipe.title }} </h2>
-            <p> {{ recipe.author_nickname }} </p>
-            <p> {{ recipe.dish_type }} </p>
-            <p> {{ recipe.description }} </p>
-            <p> {{ recipe.steps_to_complete }} </p>
-            <p> {{ recipe.tags }} </p>
-            <p> Likes: {{ recipe.likes }} </p>
-            <p> {{ recipe.date_created }} </p>
-            <p> {{ recipe.date_updated }} </p>
+            <p> <img src="{{ recipe.pictures }}"></p>
+            <p> Автор: {{ recipe.author_nickname }} </p>
+            <p> Тип блюда: {{ recipe.dish_type }} </p>
+            <p> Описание: {{ recipe.description }} </p>
+            <p> Теги: {{ recipe.tags }} </p>
+            <p> Понравилось: {{ recipe.likes }} </p>
+            <p> Дата создания: {{ recipe.date_created }} </p>
+            <p> Дата обновления: {{ recipe.date_updated }} </p>
 
         </li>
         {% endfor %}

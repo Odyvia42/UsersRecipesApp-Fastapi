@@ -32,12 +32,6 @@ async def index(request: Request):
     )
 
 
-@app.get('/authors', response_model=List[Author], status_code=status.HTTP_200_OK)
-async def get_all_authors():
-    authors = db.query(models.Author).all()
-    return authors
-
-
 @app.get('/authors/list', response_class=HTMLResponse, status_code=status.HTTP_200_OK)
 async def get_all_authors(request: Request):
     authors = db.query(models.Author).all()
@@ -92,12 +86,6 @@ async def delete_author(author_id: int):
     db.commit()
 
     return author_to_delete
-
-
-@app.get('/recipes', response_model=List[RecipeOut], status_code=status.HTTP_200_OK)
-async def get_all_recipes():
-    recipes = db.query(models.Recipe).all()
-    return recipes
 
 
 @app.get('/recipes/list', response_class=HTMLResponse, status_code=status.HTTP_200_OK)
