@@ -1,9 +1,8 @@
-
-from pydantic import Field, EmailStr, BaseModel
-
-from database import Base
 from sqlalchemy import String, Integer, Boolean, Text, Column, ForeignKey
 from sqlalchemy.orm import relationship
+
+from database import Base
+
 
 class Author(Base):
     __tablename__ = 'authors'
@@ -34,6 +33,3 @@ class Recipe(Base):
     is_blocked = Column(Boolean)
 
     author = relationship(Author, back_populates='recipes')
-
-
-

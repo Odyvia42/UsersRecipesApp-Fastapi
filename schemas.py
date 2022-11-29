@@ -6,14 +6,17 @@ class Author(BaseModel):
     id: int
     nickname: str
     faves_id_list: str | None = None
+
     class Config:
         orm_mode = True
+
 
 class AuthorIn(BaseModel):
     nickname: str
     password: str
     date_created: str = datetime.datetime.utcnow()
     faves_id_list: str | None = None
+
 
 class Recipe(BaseModel):
     id: int
@@ -25,8 +28,10 @@ class Recipe(BaseModel):
     pictures: str
     likes: int = 0
     tags: str
+
     class Config:
         orm_mode = True
+
 
 class RecipeIn(BaseModel):
     author_nickname: str
@@ -39,6 +44,7 @@ class RecipeIn(BaseModel):
     tags: str
     date_created = datetime.datetime.utcnow()
     date_updated = datetime.datetime.utcnow()
+
 
 class RecipeUpdate(BaseModel):
     title: str
@@ -55,10 +61,10 @@ class RecipeOut(Recipe):
     date_updated: str
 
 
-
 class AdminSchema(BaseModel):
-    username : str = Field(default=None)
-    password : str = Field(default=None)
+    username: str = Field(default=None)
+    password: str = Field(default=None)
+
     class Config:
         the_schema = {
             "user_demo": {
@@ -67,9 +73,11 @@ class AdminSchema(BaseModel):
             }
         }
 
+
 class AdminLoginSchema(BaseModel):
     username: str = Field(default=None)
-    password : str = Field(default=None)
+    password: str = Field(default=None)
+
     class Config:
         the_schema = {
             "user_demo": {

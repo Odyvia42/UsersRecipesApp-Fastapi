@@ -1,15 +1,16 @@
 from typing import List
-from fastapi import FastAPI, status, HTTPException, Request, Form, Depends, Body
-from pydantic import BaseModel, Field
-from starlette.responses import HTMLResponse
-from app.auth.jwt_bearer import jwtBearer
-from app.auth.jwt_handler import signJWT
-from database import SessionLocal
-import models
-from fastapi.templating import Jinja2Templates
+
+from fastapi import FastAPI, status, HTTPException, Request, Depends, Body
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from starlette.responses import HTMLResponse
+
+import models
+from app.auth.jwt_bearer import JwtBearer
+from app.auth.jwt_handler import sign_jwt
 from config import admins
-from schemas import Author, AuthorIn, RecipeOut, Recipe, RecipeIn, RecipeUpdate, AdminSchema, AdminLoginSchema
+from database import SessionLocal
+from schemas import Author, AuthorIn, RecipeOut, Recipe, RecipeIn, RecipeUpdate, AdminLoginSchema
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -19,7 +20,6 @@ admins = [{
     'username': admins.admin_username,
     'password': admins.admin_password,
 }]
-
 
 db = SessionLocal()
 
@@ -37,6 +37,7 @@ async def get_all_authors():
     authors = db.query(models.Author).all()
     return authors
 
+
 @app.get('/authors/list', response_class=HTMLResponse, status_code=status.HTTP_200_OK)
 async def get_all_authors(request: Request):
     authors = db.query(models.Author).all()
@@ -48,7 +49,6 @@ async def get_all_authors(request: Request):
 async def get_author_by_id(author_id: int):
     author = db.query(models.Author).filter(models.Author.id == author_id).first()
     return author
-
 
 
 @app.post('/authors', response_model=Author,
@@ -76,13 +76,12 @@ async def update_author(author_id: int, author: AuthorIn):
     author_to_update.password = author.password
     author_to_update.faves_id_list = author.faves_id_list,
 
-
     db.commit()
 
     return author_to_update
 
 
-@app.delete('/authors/{author_id}', dependencies=[Depends(jwtBearer())])
+@app.delete('/authors/{author_id}', dependencies=[Depends(JwtBearer())])
 async def delete_author(author_id: int):
     author_to_delete = db.query(models.Author).filter(models.Author.id == author_id).first()
 
@@ -168,7 +167,6 @@ async def delete_recipe(recipe_id: int):
     return recipe_to_delete
 
 
-
 def check_user(data: AdminLoginSchema):
     for user in admins:
         if user.get("username") == data.username and user.get("password") == data.password:
@@ -179,7 +177,7 @@ def check_user(data: AdminLoginSchema):
 @app.post('/user/login')
 def user_login(user: AdminLoginSchema = Body(default=None)):
     if check_user(user):
-        return signJWT(user.username)
+        return sign_jwt(user.username)
     else:
         return {
             "error": "Invalid login details!"
