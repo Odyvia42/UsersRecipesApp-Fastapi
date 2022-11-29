@@ -1,22 +1,25 @@
 import datetime
 from typing import List
 from fastapi import FastAPI, status, HTTPException, Request, Form, Depends, Body
-from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel, Field
 from starlette.responses import HTMLResponse
-
 from app.auth.jwt_bearer import jwtBearer
 from app.auth.jwt_handler import signJWT
 from database import SessionLocal
 import models
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from config import admins
+
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-
+admins = [{
+    'username': admins.admin_username,
+    'password': admins.admin_password,
+}]
 class Author(BaseModel):
     id: int
     nickname: str
@@ -80,10 +83,6 @@ class RecipeOut(Recipe):
 
 db = SessionLocal()
 
-admins = [{
-      "username": "alexander_laggard",
-      "password": "cookedallthemdishes"
-    }]
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
@@ -239,7 +238,6 @@ def check_user(data: models.AdminLoginSchema):
 
 @app.post('/user/login', tags=['user'])
 def user_login(user: models.AdminLoginSchema = Body(default=None)):
-    print(admins)
     if check_user(user):
         return signJWT(user.username)
     else:
