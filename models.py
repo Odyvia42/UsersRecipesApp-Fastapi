@@ -37,37 +37,3 @@ class Recipe(Base):
 
 
 
-
-class PostSchema(BaseModel):
-    id : int = Field(default=None)
-    title : str = Field(default=None)
-    content : str = Field(default=None)
-    class Config:
-        schema_extra = {
-            "post_demo" : {
-                "title" : "some title about animals",
-                "content" : "some content about animals"
-            }
-        }
-
-class AdminSchema(BaseModel):
-    username : str = Field(default=None)
-    password : str = Field(default=None)
-    class Config:
-        the_schema = {
-            "user_demo": {
-                "name": "Bek",
-                "password": "123"
-            }
-        }
-
-class AdminLoginSchema(BaseModel):
-    username: str = Field(default=None)
-    password : str = Field(default=None)
-    class Config:
-        the_schema = {
-            "user_demo": {
-                "username": "help_bek",
-                "password": "123"
-            }
-        }

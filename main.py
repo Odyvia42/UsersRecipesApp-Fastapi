@@ -1,4 +1,3 @@
-import datetime
 from typing import List
 from fastapi import FastAPI, status, HTTPException, Request, Form, Depends, Body
 from pydantic import BaseModel, Field
@@ -10,7 +9,7 @@ import models
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from config import admins
-
+from schemas import Author, AuthorIn, RecipeOut, Recipe, RecipeIn, RecipeUpdate, AdminSchema, AdminLoginSchema
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -20,66 +19,7 @@ admins = [{
     'username': admins.admin_username,
     'password': admins.admin_password,
 }]
-class Author(BaseModel):
-    id: int
-    nickname: str
-    faves_id_list: str | None = None
 
-
-
-    class Config:
-        orm_mode = True
-
-
-
-class AuthorIn(BaseModel):
-    nickname: str
-    password: str
-    date_created: str = datetime.datetime.utcnow()
-    faves_id_list: str | None = None
-
-
-
-class Recipe(BaseModel):
-    id: int
-    author_nickname: str
-    title: str
-    dish_type: str
-    description: str
-    steps_to_complete: str
-    pictures: str
-    likes: int = 0
-    tags: str
-
-
-    class Config:
-        orm_mode = True
-
-class RecipeIn(BaseModel):
-    author_nickname: str
-    title: str
-    dish_type: str
-    description: str
-    steps_to_complete: str
-    pictures: str
-    likes: int = 0
-    tags: str
-    date_created = datetime.datetime.utcnow()
-    date_updated = datetime.datetime.utcnow()
-
-class RecipeUpdate(BaseModel):
-    title: str
-    dish_type: str
-    description: str
-    steps_to_complete: str
-    pictures: str
-    tags: str
-    date_updated = datetime.datetime.utcnow()
-
-
-class RecipeOut(Recipe):
-    date_created: str
-    date_updated: str
 
 db = SessionLocal()
 
@@ -229,15 +169,15 @@ async def delete_recipe(recipe_id: int):
 
 
 
-def check_user(data: models.AdminLoginSchema):
+def check_user(data: AdminLoginSchema):
     for user in admins:
         if user.get("username") == data.username and user.get("password") == data.password:
             return True
         return False
 
 
-@app.post('/user/login', tags=['user'])
-def user_login(user: models.AdminLoginSchema = Body(default=None)):
+@app.post('/user/login')
+def user_login(user: AdminLoginSchema = Body(default=None)):
     if check_user(user):
         return signJWT(user.username)
     else:
